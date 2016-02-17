@@ -8,6 +8,26 @@
             <div class="panel-body" ng-repeat="task in taskList.tasks">
                 {{ task }}
             </div>
+            <div class="panel-heading">
+                <form class="form-inline" ng-submit="addTaskToList(taskList)">
+                    <div class="form-group">
+                        <input class="form-control" type="text" placeholder="New Task" ng-model="taskList.newTaskName"/>
+                        <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-4 col-xs-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <form class="form-inline" ng-submit="addTaskList()">
+                    <div class="form-group">
+                        <input class="form-control" type="text" placeholder="New TasksList" ng-model="newTaskListName"/>
+                        <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </div>

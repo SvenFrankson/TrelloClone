@@ -98,4 +98,19 @@ app.controller('HomeController', ['$scope', 'rooms', function ($scope, rooms) {
 app.controller('RoomController', ['$scope', '$stateParams', 'rooms', function ($scope, $stateParams, rooms) {
     "use strict";
     $scope.room = rooms.rooms[$stateParams.id];
+    
+    $scope.addTaskList = function () {
+        if ((!$scope.newTaskListName) || ($scope.newTaskListName === "")) {
+            return;
+        }
+        $scope.room.taskLists.push({ name: $scope.newTaskListName, tasks: [] });
+    };
+    
+    $scope.addTaskToList = function (tasklist) {
+        if ((!tasklist.newTaskName) || (tasklist.newTaskName === "")) {
+            return;
+        }
+        tasklist.tasks.push(tasklist.newTaskName);
+        tasklist.newTaskName = "";
+    };
 }]);
