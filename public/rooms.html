@@ -1,0 +1,13 @@
+<div class="row">
+    <h2>{{ test }}</h2>
+    <div class="col-md-3 col-sm-4 col-xs-6" ng-repeat="taskList in room.taskLists">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3>{{ taskList.name }}</h3>
+            </div>
+            <div class="panel-body" ng-repeat="task in taskList.tasks">
+                {{ task }}
+            </div>
+        </div>
+    </div>
+</div>
