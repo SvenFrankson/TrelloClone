@@ -126,7 +126,7 @@ app.controller('RoomController', ['$scope', '$stateParams', 'rooms', function ($
         if ((!$scope.newTaskListName) || ($scope.newTaskListName === "")) {
             return;
         }
-        $scope.room.taskLists.push({ name: $scope.newTaskListName, tasks: [] });
+        $scope.room.taskLists.push({ name: $scope.newTaskListName, tasks: [], users: []});
         $scope.newTaskListName = "";
     };
     
@@ -143,17 +143,13 @@ app.controller('RoomController', ['$scope', '$stateParams', 'rooms', function ($
         if ((!tasklist.newTaskName) || (tasklist.newTaskName === "")) {
             return;
         }
-        tasklist.tasks.push({ rank: tasklist.tasks.length, content: tasklist.newTaskName});
+        tasklist.tasks.push({ rank: tasklist.tasks.length, content: tasklist.newTaskName, tags: []});
         tasklist.newTaskName = "";
     };
     
-    $scope.addTagToTask = function (task) {
-        if ((!task.newTagId) || (task.newTagId < 0)) {
-            return;
+    $scope.addTagToTask = function (task, tag) {
+        if (task.tags.indexOf(tag) === -1) {
+            task.tags.push(tag);
         }
-        if (task.tags.indexOf(task.newTagId) === -1) {
-            task.tags.push(task.newTagId);
-        }
-        task.newTagId = 0;
     };
 }]);

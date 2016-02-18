@@ -88,13 +88,11 @@
                                     </span>
                                 </span>
                                 
-                                <span class="label label-default" uib-dropdown on-toggle="toggled(open)">
-                                    <a href id="simple-dropdown" uib-dropdown-toggle>
-                                        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-                                    </a>
-                                    <ul uib-dropdown-menu aria-labelledby="simple-dropdown">
+                                <span uib-dropdown>
+                                    <span class="label label-default" id="simple-dropdown" uib-dropdown-toggle>+</span>
+                                    <ul uib-dropdown-menu>
                                         <li ng-repeat="tag in room.tags">
-                                        <a href>{{tag.name}}</a>
+                                        <a ng-click="addTagToTask(task, room.tags.indexOf(tag))">{{tag.name}}</a>
                                         </li>
                                     </ul>
                                 </span>
