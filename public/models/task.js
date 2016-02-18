@@ -3,7 +3,9 @@
 var mongoose = require('mongoose');
 
 var TaskSchema = module.exports = new mongoose.Schema({
-
+    rank : Number,
+    content : String,
+    tags : [mongoose.Schema.Types.ObjectId]
 });
 
 var Task = module.exports = mongoose.model('Task', TaskSchema);
