@@ -2,7 +2,7 @@
     angular
 */
 
-var app = angular.module('trelloClone', ['ui.router']);
+var app = angular.module('trelloClone', ['ui.router', 'ui.bootstrap']);
 
 app.factory('rooms', [function () {
     "use strict";
@@ -17,12 +17,12 @@ app.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $u
     $stateProvider
         .state('home', {
             url: '/home',
-            templateUrl: '/home.html',
+            templateUrl: 'home.html',
             controller: 'HomeController'
         })
         .state('rooms', {
             url: '/rooms/{id}',
-            templateUrl: '/rooms.html',
+            templateUrl: 'rooms.html',
             controller: 'RoomController'
         });
     
@@ -31,67 +31,90 @@ app.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $u
 
 app.controller('HomeController', ['$scope', 'rooms', function ($scope, rooms) {
     "use strict";
-    rooms.rooms = [];
-    rooms.rooms.push({
-        name: "My test room",
-        taskLists: [
-            {
-                name: "TaskList1",
-                tasks: [
-                    "Do the dishes",
-                    "Do the laundry"
-                ]
-            },
-            {
-                name: "TaskListMore",
-                tasks: [
-                    "Do more dishes",
-                    "Do more laundry"
-                ]
-            }
-        ],
-        users: ["Andrew", "Bryan", "Chuck"]
-    });
-    rooms.rooms.push({
-        name: "My other room",
-        taskLists: [
-            {
-                name: "TaskList2",
-                tasks: [
-                    "Do the carwash",
-                    "Do the laundry"
-                ]
-            },
-            {
-                name: "TaskListNext",
-                tasks: [
-                    "Do more dishes",
-                    "Do more carwash"
-                ]
-            }
-        ],
-        users: ["Danny", "Eliott", "Frank"]
-    });
-    rooms.rooms.push({
-        name: "My third room",
-        taskLists: [
-            {
-                name: "TaskList3",
-                tasks: [
-                    "Do the carwash",
-                    "Do the laundry"
-                ]
-            },
-            {
-                name: "TaskListOther",
-                tasks: [
-                    "Do nothing",
-                    "Do more carwash"
-                ]
-            }
-        ],
-        users: ["Andrew", "Chuck", "Eliott"]
-    });
+    if (rooms.rooms.length === 0) {
+        rooms.rooms.push({
+            name: "My test room",
+            taskLists: [
+                {
+                    name: "TaskList1",
+                    tasks: [
+                        { rank: 0, content: "Do the dishes", tags: [0, 2, 3]},
+                        { rank: 1, content: "Do the laundry", tags: []}
+                    ]
+                },
+                {
+                    name: "TaskListMore",
+                    tasks: [
+                        { rank: 0, content: "Do more dishes", tags: [1, 2]},
+                        { rank: 1, content: "Do more laundry", tags: [3]}
+                    ]
+                }
+            ],
+            users: ["Andrew", "Bryan", "Chuck"],
+            tags: [
+                { name: "Smooth", color: "#e3a0f0"},
+                { name: "Easy", color: "#b7f0a0"},
+                { name: "Normal", color: "#a0eef0"},
+                { name: "Hard", color: "#df4a4a"},
+                { name: "Insane", color: "#545454"}
+            ]
+        });
+        rooms.rooms.push({
+            name: "My other room",
+            taskLists: [
+                {
+                    name: "TaskList1",
+                    tasks: [
+                        { rank: 0, content: "Do the dishes", tags: [0, 2, 3]},
+                        { rank: 1, content: "Do the laundry", tags: []}
+                    ]
+                },
+                {
+                    name: "TaskListMore",
+                    tasks: [
+                        { rank: 0, content: "Do more dishes", tags: [1, 2]},
+                        { rank: 1, content: "Do more laundry", tags: [3]}
+                    ]
+                }
+            ],
+            users: ["Danny", "Eliott", "Frank"],
+            tags: [
+                { name: "Smooth", color: "pink"},
+                { name: "Easy", color: "green"},
+                { name: "Normal", color: "blue"},
+                { name: "Hard", color: "red"},
+                { name: "Insane", color: "black"}
+            ]
+        });
+        rooms.rooms.push({
+            name: "My third room",
+            taskLists: [
+                {
+                    name: "TaskList1",
+                    tasks: [
+                        { rank: 0, content: "Do the dishes", tags: [0, 2, 3]},
+                        { rank: 1, content: "Do the laundry", tags: []}
+                    ]
+                },
+                {
+                    name: "TaskListMore",
+                    tasks: [
+                        { rank: 0, content: "Do more dishes", tags: [1, 2]},
+                        { rank: 1, content: "Do more laundry", tags: [3]}
+                    ]
+                }
+            ],
+            users: ["Andrew", "Chuck", "Eliott"],
+            tags: [
+                { name: "Smooth", color: "pink"},
+                { name: "Easy", color: "green"},
+                { name: "Normal", color: "blue"},
+                { name: "Hard", color: "red"},
+                { name: "Insane", color: "black"}
+            ]
+        });
+    }
+    
     $scope.rooms = rooms.rooms;
 }]);
 
@@ -104,13 +127,33 @@ app.controller('RoomController', ['$scope', '$stateParams', 'rooms', function ($
             return;
         }
         $scope.room.taskLists.push({ name: $scope.newTaskListName, tasks: [] });
+        $scope.newTaskListName = "";
+    };
+    
+    $scope.addTag = function () {
+        if ((!$scope.newTagName) || ($scope.newTagName === "")) {
+            return;
+        }
+        $scope.room.tags.push({ name: $scope.newTagName, color: $scope.newTagColor });
+        $scope.newTagName = "";
+        $scope.newTagColor = "";
     };
     
     $scope.addTaskToList = function (tasklist) {
         if ((!tasklist.newTaskName) || (tasklist.newTaskName === "")) {
             return;
         }
-        tasklist.tasks.push(tasklist.newTaskName);
+        tasklist.tasks.push({ rank: tasklist.tasks.length, content: tasklist.newTaskName});
         tasklist.newTaskName = "";
+    };
+    
+    $scope.addTagToTask = function (task) {
+        if ((!task.newTagId) || (task.newTagId < 0)) {
+            return;
+        }
+        if (task.tags.indexOf(task.newTagId) === -1) {
+            task.tags.push(task.newTagId);
+        }
+        task.newTagId = 0;
     };
 }]);
