@@ -9,12 +9,34 @@
     </head>
     
     <body ng-app="trello-clone">
-        <nav class="navbar navbar-default" ng-controller="UserController">
+        <nav class="navbar navbar-default" ng-controller="AuthController">
             <div class="container-fluid">
                 <div class="navbar-header">
                     <a class="navbar-brand" href="#/home">Home</a>
-                    <span class="label label-default">{{ user.name }}</span>
-                    <span class="label label-default">{{ user.email }}</span>
+                </div>
+                <div ng-hide="isLoggedIn()">
+                    <form ng-hide="newUser" class="navbar-form navbar-left" ng-submit="logIn()">
+                        <div class="form-group">
+                            <span>Log In</span>
+                            <input class="form-control input-sm" type="text" placeholder="email" ng-model="user.email" ng-required/>
+                            <input class="form-control input-sm" type="text" placeholder="password" ng-model="user.password" ng-required/>
+                            <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></button>
+                            <button class="btn btn-default" ng-click="newUser = !newUser">Need an account ?</button>
+                        </div>
+                    </form>
+                    <form ng-show="newUser" class="navbar-form navbar-left" ng-submit="register()">
+                        <div class="form-group">
+                            <span>Register</span>
+                            <input class="form-control input-sm" type="text" placeholder="email" ng-model="user.email" ng-required/>
+                            <input class="form-control input-sm" type="text" placeholder="password" ng-model="user.password" ng-required/>
+                            <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span></button>
+                            <button class="btn btn-default" ng-click="newUser = !newUser">Already registered ?</button>
+                        </div>
+                    </form>
+                </div>
+                <div ng-show="isLoggedIn()">
+                    <p class="navbar-text">Signed in as {{ currentUserEmail() }}</p>
+                    <button class="btn btn-default" ng-click="logOut()">Log Out</button>
                 </div>
             </div>
         </nav>

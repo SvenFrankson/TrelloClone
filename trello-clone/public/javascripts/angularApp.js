@@ -4,12 +4,54 @@
 
 var app = angular.module('trello-clone', ['ui.router', 'ui.bootstrap']);
 
-app.factory('user', [function () {
+app.factory('auth', ['$http', '$window', function ($http, $window) {
     "use strict";
-    var u = {
-        user : {}
+    var auth = {};
+    
+    auth.saveToken = function (token) {
+        $window.localStorage['trello-clone-token'] = token;
     };
-    return u;
+    
+    auth.getToken = function () {
+        return $window.localStorage['trello-clone-token'];
+    };
+    
+    auth.isLoggedIn = function () {
+        var token = auth.getToken(),
+            payload;
+        if (token) {
+            payload = JSON.parse($window.atob(token.split('.')[1]));
+            return payload.exp > Date.now() / 1000;
+        } else {
+            return false;
+        }
+    };
+    
+    auth.currentUserEmail = function () {
+        if (auth.isLoggedIn()) {
+            var token = auth.getToken(),
+                payload = JSON.parse($window.atob(token.split('.')[1]));
+            return payload.email;
+        }
+    };
+    
+    auth.register = function (user) {
+        return $http.post('/register', user).success(function (data) {
+            auth.saveToken(data.token);
+        });
+    };
+    
+    auth.logIn = function (user) {
+        return $http.post('/login', user).success(function (data) {
+            auth.saveToken(data.token);
+        });
+    };
+    
+    auth.logOut = function () {
+        $window.localStorage.removeItem('trello-clone-token');
+    };
+    
+    return auth;
 }]);
 
 app.factory('rooms', [function () {
@@ -37,8 +79,30 @@ app.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $u
     $urlRouterProvider.otherwise('home');
 }]);
 
-app.controller('UserController', ['$scope', 'user', function ($scope, user) {
+app.controller('AuthController', ['$scope', 'auth', function ($scope, auth) {
     "use strict";
+    $scope.newUser = false;
+    $scope.user = {};
+    
+    $scope.register = function () {
+        return auth.register($scope.user);
+    };
+    
+    $scope.logIn = function () {
+        return auth.logIn($scope.user);
+    };
+    
+    $scope.logOut = function () {
+        return auth.logOut();
+    };
+    
+    $scope.isLoggedIn = function () {
+        return auth.isLoggedIn();
+    };
+    
+    $scope.currentUserEmail = function () {
+        return auth.currentUserEmail();
+    };
 }]);
 
 app.controller('HomeController', ['$scope', 'rooms', function ($scope, rooms) {

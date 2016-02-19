@@ -1,9 +1,49 @@
-var express = require('express');
-var router = express.Router();
+/*jslint node:true*/
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
+var express = require('express'),
+    router = express.Router(),
+    passport = require('passport'),
+    mongoose = require('mongoose'),
+    User = mongoose.model('User');
+
+router.get('/', function (req, res, next) {
+    "use strict";
     res.render('index', { title: 'Express' });
+});
+
+router.post('/register', function (req, res, next) {
+    "use strict";
+    if (!req.body.email || !req.body.password) {
+        return res.status(400).json({ message : 'Please provide an email adress and a password.'});
+    }
+    var user = new User();
+    user.email = req.body.email;
+    user.setPassword(req.body.password);
+    user.save(function (err) {
+        if (err) {
+            return next(err);
+        }
+        return res.json({token : user.generateJWT()});
+    });
+});
+
+router.post('/login', function (req, res, next) {
+    "use strict";
+    if (!req.body.email || !req.body.password) {
+        return res.status(400).json({ message : 'Please provide an email adress and a password.'});
+    }
+
+    passport.authenticate('local', function (err, user, info) {
+        if (err) {
+            return next(err);
+        }
+
+        if (user) {
+            return res.json({token : user.generateJWT()});
+        } else {
+            return res.status(401).json(info);
+        }
+    })(req, res, next);
 });
 
 module.exports = router;
