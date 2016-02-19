@@ -2,7 +2,15 @@
     angular
 */
 
-var app = angular.module('trelloClone', ['ui.router', 'ui.bootstrap']);
+var app = angular.module('trello-clone', ['ui.router', 'ui.bootstrap']);
+
+app.factory('user', [function () {
+    "use strict";
+    var u = {
+        user : {}
+    };
+    return u;
+}]);
 
 app.factory('rooms', [function () {
     "use strict";
@@ -27,6 +35,10 @@ app.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $u
         });
     
     $urlRouterProvider.otherwise('home');
+}]);
+
+app.controller('UserController', ['$scope', 'user', function ($scope, user) {
+    "use strict";
 }]);
 
 app.controller('HomeController', ['$scope', 'rooms', function ($scope, rooms) {
