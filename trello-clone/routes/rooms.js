@@ -28,6 +28,10 @@ router.get('/', function (req, res, next) {
             }
             return res.json(room);
         });
+    })
+
+    .post('/save', auth, function (req, res, next) {
+        "use strict";
     });
 
 module.exports = router;

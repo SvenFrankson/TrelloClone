@@ -25,7 +25,7 @@
 </div>
 
 <div class="row">
-    <div class="col-md-3 col-sm-4 col-xs-6" ng-repeat="taskList in room.taskLists">
+    <div class="col-md-3 col-sm-4 col-xs-6" ng-repeat="taskList in room.boards">
         <div class="panel panel-default">
             <div class="panel-heading">
                 <div ng-hide="taskListEditing" ng-click="taskListEditing = true">
@@ -82,9 +82,9 @@
     <div class="col-md-3 col-sm-4 col-xs-6">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <form class="form-inline" ng-submit="addTaskList()">
+                <form class="form-inline" ng-submit="addBoard()">
                     <div class="form-group">
-                        <input class="form-control" type="text" placeholder="New TasksList" ng-model="newTaskListName"/>
+                        <input class="form-control" type="text" placeholder="New Board Name" ng-model="newBoardName"/>
                         <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
                     </div>
                 </form>

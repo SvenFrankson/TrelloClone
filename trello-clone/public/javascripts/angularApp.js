@@ -68,10 +68,13 @@ app.factory('rooms', ['$http', 'auth', function ($http, auth) {
         rooms : []
     };
     
+    r.getRooms = function (room, userId) {
+        return $http.get('/rooms/').success(function (data) {
+            angular.copy(data, r.rooms);
+        });
+    };
+    
     r.createRoom = function (room, userId) {
-        alert("Create Room " + auth.isLoggedIn());
-        alert("Room " + room);
-        alert("UserId " + userId);
         if (auth.isLoggedIn()) {
             return $http.post('/rooms/add', room, {headers : {Authorization : 'Bearer ' + auth.getToken()}});
         }
@@ -86,7 +89,12 @@ app.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $u
         .state('home', {
             url: '/home',
             templateUrl: 'views/partial-home.html',
-            controller: 'HomeController'
+            controller: 'HomeController',
+            resolve : {
+                populate : ['rooms', function (rooms) {
+                    return rooms.getRooms();
+                }]
+            }
         })
         .state('rooms', {
             url: '/rooms/{id}',
@@ -125,90 +133,13 @@ app.controller('AuthController', ['$scope', 'auth', function ($scope, auth) {
 
 app.controller('HomeController', ['$scope', 'auth', 'rooms', function ($scope, auth, rooms) {
     "use strict";
-    if (rooms.rooms.length === 0) {
-        rooms.rooms.push({
-            name: "My test room",
-            taskLists: [
-                {
-                    name: "TaskList1",
-                    tasks: [
-                        { rank: 0, content: "Do the dishes", tags: [0, 2, 3]},
-                        { rank: 1, content: "Do the laundry", tags: []}
-                    ]
-                },
-                {
-                    name: "TaskListMore",
-                    tasks: [
-                        { rank: 0, content: "Do more dishes", tags: [1, 2]},
-                        { rank: 1, content: "Do more laundry", tags: [3]}
-                    ]
-                }
-            ],
-            users: ["Andrew", "Bryan", "Chuck"],
-            tags: [
-                { name: "Smooth", color: "#e3a0f0"},
-                { name: "Easy", color: "#b7f0a0"},
-                { name: "Normal", color: "#a0eef0"},
-                { name: "Hard", color: "#df4a4a"},
-                { name: "Insane", color: "#545454"}
-            ]
-        });
-        rooms.rooms.push({
-            name: "My other room",
-            taskLists: [
-                {
-                    name: "TaskList1",
-                    tasks: [
-                        { rank: 0, content: "Do the dishes", tags: [0, 2, 3]},
-                        { rank: 1, content: "Do the laundry", tags: []}
-                    ]
-                },
-                {
-                    name: "TaskListMore",
-                    tasks: [
-                        { rank: 0, content: "Do more dishes", tags: [1, 2]},
-                        { rank: 1, content: "Do more laundry", tags: [3]}
-                    ]
-                }
-            ],
-            users: ["Danny", "Eliott", "Frank"],
-            tags: [
-            ]
-        });
-        rooms.rooms.push({
-            name: "My third room",
-            taskLists: [
-                {
-                    name: "TaskList1",
-                    tasks: [
-                        { rank: 0, content: "Do the dishes", tags: [0, 2, 3]},
-                        { rank: 1, content: "Do the laundry", tags: []}
-                    ]
-                },
-                {
-                    name: "TaskListMore",
-                    tasks: [
-                        { rank: 0, content: "Do more dishes", tags: [1, 2]},
-                        { rank: 1, content: "Do more laundry", tags: [3]}
-                    ]
-                }
-            ],
-            users: ["Andrew", "Chuck", "Eliott"],
-            tags: [
-                { name: "Smooth", color: "pink"},
-                { name: "Easy", color: "green"},
-                { name: "Normal", color: "blue"},
-                { name: "Hard", color: "red"},
-                { name: "Insane", color: "black"}
-            ]
-        });
-    }
-    
     $scope.newRoom = {};
     $scope.rooms = rooms.rooms;
     
     $scope.addRoom = function () {
         rooms.createRoom($scope.newRoom, auth.currentUserId());
+        $scope.newRoom = {};
+        rooms.getRooms();
     };
 }]);
 
@@ -216,12 +147,13 @@ app.controller('RoomController', ['$scope', '$stateParams', 'rooms', function ($
     "use strict";
     $scope.room = rooms.rooms[$stateParams.id];
     
-    $scope.addTaskList = function () {
-        if ((!$scope.newTaskListName) || ($scope.newTaskListName === "")) {
+    $scope.addBoard = function () {
+        if ((!$scope.newBoardName) || ($scope.newBoardName === "")) {
             return;
         }
-        $scope.room.taskLists.push({ name: $scope.newTaskListName, tasks: [], users: []});
-        $scope.newTaskListName = "";
+        alert("Addboard");
+        $scope.room.boards.push({ name: $scope.newBoardName, tasks: [], users: []});
+        $scope.newBoardName = "";
     };
     
     $scope.addTag = function () {
