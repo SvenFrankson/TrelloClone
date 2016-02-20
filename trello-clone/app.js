@@ -10,6 +10,8 @@ var passport = require('passport');
 
 var mongoose = require('mongoose');
 require('./models/Users');
+require('./models/Boards');
+require('./models/Rooms');
 mongoose.connect('mongodb://localhost/trello-clone');
 
 var app = express();
@@ -30,9 +32,11 @@ app.use(passport.initialize());
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
+var rooms = require('./routes/rooms');
 
 app.use('/', routes);
 app.use('/users', users);
+app.use('/rooms', rooms);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

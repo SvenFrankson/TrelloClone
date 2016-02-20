@@ -67,12 +67,12 @@ app.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $u
     $stateProvider
         .state('home', {
             url: '/home',
-            templateUrl: 'home.html',
+            templateUrl: 'views/partial-home.html',
             controller: 'HomeController'
         })
         .state('rooms', {
             url: '/rooms/{id}',
-            templateUrl: 'rooms.html',
+            templateUrl: 'views/partial-rooms.html',
             controller: 'RoomController'
         });
     
@@ -155,11 +155,6 @@ app.controller('HomeController', ['$scope', 'rooms', function ($scope, rooms) {
             ],
             users: ["Danny", "Eliott", "Frank"],
             tags: [
-                { name: "Smooth", color: "pink"},
-                { name: "Easy", color: "green"},
-                { name: "Normal", color: "blue"},
-                { name: "Hard", color: "red"},
-                { name: "Insane", color: "black"}
             ]
         });
         rooms.rooms.push({
@@ -191,6 +186,7 @@ app.controller('HomeController', ['$scope', 'rooms', function ($scope, rooms) {
         });
     }
     
+    $scope.newRoom = {};
     $scope.rooms = rooms.rooms;
 }]);
 
