@@ -165,6 +165,7 @@ app.controller('HomeController', ['$scope', 'auth', 'rooms', function ($scope, a
 app.controller('RoomController', ['$scope', '$stateParams', '$http', 'rooms', 'roomService', 'auth', function ($scope, $stateParams, $http, rooms, roomService, auth) {
     "use strict";
     $scope.room = rooms.rooms[$stateParams.id];
+    roomService.getRoom($scope.room, $scope.room._id);
     
     $scope.addBoard = function () {
         if ((!$scope.newBoardName) || ($scope.newBoardName === "")) {

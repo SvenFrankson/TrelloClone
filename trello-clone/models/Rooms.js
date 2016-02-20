@@ -1,11 +1,10 @@
 /*jslint node: true */
 
-var mongoose = require('mongoose'),
-    BoardSchema = require('./Boards');
+var mongoose = require('mongoose');
 
 var RoomSchema = new mongoose.Schema({
     name : String,
-    boards : [BoardSchema],
+    boards : [{ type : mongoose.Schema.Types.ObjectId, ref : 'Board'}],
     tags : [
         {
             name : String,

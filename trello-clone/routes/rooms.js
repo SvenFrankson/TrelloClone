@@ -21,7 +21,7 @@ router.get('/', function (req, res, next) {
 
     .post('/getRoom', function (req, res, next) {
         "use strict";
-        Room.findOne({_id : req.body.roomId}).populate('users').exec(function (err, room) {
+        Room.findOne({_id : req.body.roomId}).populate('boards').exec(function (err, room) {
             if (err) {
                 return next(err);
             }
@@ -48,12 +48,14 @@ router.get('/', function (req, res, next) {
             var newBoard = new Board();
             newBoard.name = req.body.boardName;
             newBoard.rank = room.boards.length;
-            room.boards.push(newBoard);
-            room.save(function (err, room) {
-                if (err) {
-                    return next(err);
-                }
-                return res.json(room);
+            newBoard.save(function (err, board) {
+                room.boards.push(board._id);
+                room.save(function (err, room) {
+                    if (err) {
+                        return next(err);
+                    }
+                    return res.json(room);
+                });
             });
         });
     });
