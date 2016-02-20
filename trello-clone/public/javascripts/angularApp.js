@@ -143,7 +143,7 @@ app.controller('HomeController', ['$scope', 'auth', 'rooms', function ($scope, a
     };
 }]);
 
-app.controller('RoomController', ['$scope', '$stateParams', 'rooms', function ($scope, $stateParams, rooms) {
+app.controller('RoomController', ['$scope', '$stateParams', '$http', 'rooms', 'auth', function ($scope, $stateParams, $http, rooms, auth) {
     "use strict";
     $scope.room = rooms.rooms[$stateParams.id];
     
@@ -151,8 +151,8 @@ app.controller('RoomController', ['$scope', '$stateParams', 'rooms', function ($
         if ((!$scope.newBoardName) || ($scope.newBoardName === "")) {
             return;
         }
-        alert("Addboard");
-        $scope.room.boards.push({ name: $scope.newBoardName, tasks: [], users: []});
+        $http.post('/rooms/addBoard', {roomId : $scope.room._id, boardName : $scope.newBoardName}, {headers : {Authorization : 'Bearer ' + auth.getToken()}});
+        rooms.getRooms();
         $scope.newBoardName = "";
     };
     

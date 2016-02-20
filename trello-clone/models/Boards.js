@@ -9,8 +9,7 @@ var BoardSchema = new mongoose.Schema({
         {
             name : String
         }
-    ],
-    users : [mongoose.Schema.Types.ObjectId]
+    ]
 });
 
 mongoose.model('Board', BoardSchema);
