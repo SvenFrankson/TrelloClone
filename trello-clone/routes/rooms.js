@@ -18,6 +18,17 @@ router.get('/', function (req, res, next) {
         return res.json(rooms);
     });
 })
+
+    .post('/getRoom', function (req, res, next) {
+        "use strict";
+        Room.findOne({_id : req.body.roomId}).populate('users').exec(function (err, room) {
+            if (err) {
+                return next(err);
+            }
+            return res.json(room);
+        });
+    })
+
     .post('/add', auth, function (req, res, next) {
         "use strict";
         var room = new Room(req.body);

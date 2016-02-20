@@ -83,6 +83,25 @@ app.factory('rooms', ['$http', 'auth', function ($http, auth) {
     return r;
 }]);
 
+app.service('roomService', ['$http', 'auth', function ($http, auth) {
+    "use strict";
+    var roomService = {};
+    
+    roomService.getRoom = function (room, roomId) {
+        return $http.post('/rooms/getRoom', {roomId : roomId}, {headers : {Authorization : 'Bearer ' + auth.getToken()}}).success(function (data) {
+            angular.copy(data, room);
+        });
+    };
+    
+    roomService.addBoard = function (room, boardName) {
+        if (auth.isLoggedIn()) {
+            return $http.post('/rooms/addBoard', {roomId : room._id, boardName : boardName}, {headers : {Authorization : 'Bearer ' + auth.getToken()}}).success(roomService.getRoom(room, room._id));
+        }
+    };
+    
+    return roomService;
+}]);
+
 app.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $urlRouterProvider) {
     "use strict";
     $stateProvider
@@ -143,7 +162,7 @@ app.controller('HomeController', ['$scope', 'auth', 'rooms', function ($scope, a
     };
 }]);
 
-app.controller('RoomController', ['$scope', '$stateParams', '$http', 'rooms', 'auth', function ($scope, $stateParams, $http, rooms, auth) {
+app.controller('RoomController', ['$scope', '$stateParams', '$http', 'rooms', 'roomService', 'auth', function ($scope, $stateParams, $http, rooms, roomService, auth) {
     "use strict";
     $scope.room = rooms.rooms[$stateParams.id];
     
@@ -151,9 +170,7 @@ app.controller('RoomController', ['$scope', '$stateParams', '$http', 'rooms', 'a
         if ((!$scope.newBoardName) || ($scope.newBoardName === "")) {
             return;
         }
-        $http.post('/rooms/addBoard', {roomId : $scope.room._id, boardName : $scope.newBoardName}, {headers : {Authorization : 'Bearer ' + auth.getToken()}});
-        rooms.getRooms();
-        $scope.newBoardName = "";
+        roomService.addBoard($scope.room, $scope.newBoardName);
     };
     
     $scope.addTag = function () {
