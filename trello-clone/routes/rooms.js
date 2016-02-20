@@ -21,13 +21,15 @@ router.get('/', function (req, res, next) {
 
 router.post('/getRoom', function (req, res, next) {
     "use strict";
-    console.log(req.body);
-    Room.findOne({_id : req.body.roomId}).populate('boards').exec(function (err, room) {
+    Room.findOne({_id : req.body.roomId}).populate('boards').exec(function (err, boards) {
         if (err) {
             console.log(err);
             return next(err);
         }
-        return res.json(room);
+        Room.populate(boards, {path : 'boards.tasks', model : 'Task'}, function (err, room) {
+            console.log(room);
+            return res.json(room);
+        });
     });
 });
 

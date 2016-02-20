@@ -87,8 +87,8 @@ app.service('roomService', ['$http', 'auth', function ($http, auth) {
     "use strict";
     var roomService = {};
     
-    roomService.getRoom = function (room, roomId) {
-        return $http.post('/rooms/getRoom', {roomId : roomId}, {headers : {Authorization : 'Bearer ' + auth.getToken()}}).success(function (data) {
+    roomService.getRoom = function (room) {
+        return $http.post('/rooms/getRoom', {roomId : room._id}, {headers : {Authorization : 'Bearer ' + auth.getToken()}}).success(function (data) {
             angular.copy(data, room);
         });
     };
@@ -96,7 +96,7 @@ app.service('roomService', ['$http', 'auth', function ($http, auth) {
     roomService.addBoard = function (room, boardName) {
         if (auth.isLoggedIn()) {
             $http.post('/rooms/addBoard', {roomId : room._id, boardName : boardName}, {headers : {Authorization : 'Bearer ' + auth.getToken()}}).success(function (data) {
-                return roomService.getRoom(room, room._id);
+                return roomService.getRoom(room);
             });
         }
     };
@@ -104,12 +104,27 @@ app.service('roomService', ['$http', 'auth', function ($http, auth) {
     roomService.addTag = function (room, tag) {
         if (auth.isLoggedIn()) {
             $http.post('/rooms/addTag', {roomId : room._id, tag : tag}, {headers : {Authorization : 'Bearer ' + auth.getToken()}}).success(function (data) {
-                return roomService.getRoom(room, room._id);
+                return roomService.getRoom(room);
             });
         }
     };
     
     return roomService;
+}]);
+
+app.service('boardService', ['$http', 'auth', 'roomService', function ($http, auth, roomService) {
+    "use strict";
+    var boardService = {};
+    
+    boardService.addTask = function (room, board, task) {
+        if (auth.isLoggedIn()) {
+            $http.post('/boards/addTask', {boardId : board._id, task : task}, {headers : {Authorization : 'Bearer ' + auth.getToken()}}).success(function (data) {
+                return roomService.getRoom(room);
+            });
+        }
+    };
+    
+    return boardService;
 }]);
 
 app.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $urlRouterProvider) {
@@ -172,16 +187,17 @@ app.controller('HomeController', ['$scope', 'auth', 'rooms', function ($scope, a
     };
 }]);
 
-app.controller('RoomController', ['$scope', '$stateParams', '$http', 'rooms', 'roomService', 'auth', function ($scope, $stateParams, $http, rooms, roomService, auth) {
+app.controller('RoomController', ['$scope', '$stateParams', '$http', 'rooms', 'roomService', 'boardService', 'auth', function ($scope, $stateParams, $http, rooms, roomService, boardService, auth) {
     "use strict";
     $scope.room = rooms.rooms[$stateParams.id];
-    roomService.getRoom($scope.room, $scope.room._id);
+    roomService.getRoom($scope.room);
     
     $scope.addBoard = function () {
         if ((!$scope.newBoardName) || ($scope.newBoardName === "")) {
             return;
         }
         roomService.addBoard($scope.room, $scope.newBoardName);
+        $scope.newBoardName = "";
     };
     
     $scope.addTag = function () {
@@ -189,14 +205,16 @@ app.controller('RoomController', ['$scope', '$stateParams', '$http', 'rooms', 'r
             return;
         }
         roomService.addTag($scope.room, {name : $scope.newTagName, color : $scope.newTagColor});
+        $scope.newTagName = "";
+        $scope.newTagColor = "";
     };
     
-    $scope.addTaskToList = function (tasklist) {
-        if ((!tasklist.newTaskName) || (tasklist.newTaskName === "")) {
+    $scope.addTask = function (board) {
+        if ((!board.newTaskContent) || (board.newTaskContent === "")) {
             return;
         }
-        tasklist.tasks.push({ rank: tasklist.tasks.length, content: tasklist.newTaskName, tags: []});
-        tasklist.newTaskName = "";
+        boardService.addTask($scope.room, board, { content : board.newTaskContent});
+        board.newTaskContent = "";
     };
     
     $scope.addTagToTask = function (task, tag) {
