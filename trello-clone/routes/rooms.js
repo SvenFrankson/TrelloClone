@@ -3,29 +3,31 @@
 var express = require('express'),
     router = express.Router(),
     mongoose = require('mongoose'),
-    Room = mongoose.model('Room');
+    Room = mongoose.model('Room'),
+    jwt = require('express-jwt'),
+    auth = jwt({secret : 'TRELLOCLONE', userProperty : 'payload'});
 
 /* GET users listing. */
 router.get('/', function (req, res, next) {
     "use strict";
-    Room.find(function (err, rooms) {
+    Room.find().populate('users').exec(function (err, rooms) {
         if (err) {
             return next(err);
         }
         return res.json(rooms);
     });
-});
-
-router.post('/add', function (req, res, next) {
-    "use strict";
-    var room = new Room(req.body);
+})
+    .post('/add', auth, function (req, res, next) {
+        "use strict";
+        var room = new Room(req.body);
+        room.users.push(req.payload._id);
     
-    room.save(function (err, post) {
-        if (err) {
-            return next(err);
-        }
-        return res.json(room);
+        room.save(function (err, post) {
+            if (err) {
+                return next(err);
+            }
+            return res.json(room);
+        });
     });
-});
 
 module.exports = router;

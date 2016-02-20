@@ -35,8 +35,8 @@ var users = require('./routes/users');
 var rooms = require('./routes/rooms');
 
 app.use('/', routes);
-app.use('/users', users);
-app.use('/rooms', rooms);
+app.use('/users/', users);
+app.use('/rooms/', rooms);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -53,6 +53,7 @@ app.use(function (req, res, next) {
 if (app.get('env') === 'development') {
     app.use(function (err, req, res, next) {
         "use strict";
+        console.log(err);
         res.status(err.status || 500);
         res.render('error', {
             message: err.message,

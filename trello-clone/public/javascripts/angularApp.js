@@ -35,6 +35,14 @@ app.factory('auth', ['$http', '$window', function ($http, $window) {
         }
     };
     
+    auth.currentUserId = function () {
+        if (auth.isLoggedIn()) {
+            var token = auth.getToken(),
+                payload = JSON.parse($window.atob(token.split('.')[1]));
+            return payload._id;
+        }
+    };
+    
     auth.register = function (user) {
         return $http.post('/register', user).success(function (data) {
             auth.saveToken(data.token);
@@ -54,11 +62,21 @@ app.factory('auth', ['$http', '$window', function ($http, $window) {
     return auth;
 }]);
 
-app.factory('rooms', [function () {
+app.factory('rooms', ['$http', 'auth', function ($http, auth) {
     "use strict";
     var r = {
         rooms : []
     };
+    
+    r.createRoom = function (room, userId) {
+        alert("Create Room " + auth.isLoggedIn());
+        alert("Room " + room);
+        alert("UserId " + userId);
+        if (auth.isLoggedIn()) {
+            return $http.post('/rooms/add', room, {headers : {Authorization : 'Bearer ' + auth.getToken()}});
+        }
+    };
+    
     return r;
 }]);
 
@@ -105,7 +123,7 @@ app.controller('AuthController', ['$scope', 'auth', function ($scope, auth) {
     };
 }]);
 
-app.controller('HomeController', ['$scope', 'rooms', function ($scope, rooms) {
+app.controller('HomeController', ['$scope', 'auth', 'rooms', function ($scope, auth, rooms) {
     "use strict";
     if (rooms.rooms.length === 0) {
         rooms.rooms.push({
@@ -188,6 +206,10 @@ app.controller('HomeController', ['$scope', 'rooms', function ($scope, rooms) {
     
     $scope.newRoom = {};
     $scope.rooms = rooms.rooms;
+    
+    $scope.addRoom = function () {
+        rooms.createRoom($scope.newRoom, auth.currentUserId());
+    };
 }]);
 
 app.controller('RoomController', ['$scope', '$stateParams', 'rooms', function ($scope, $stateParams, rooms) {
