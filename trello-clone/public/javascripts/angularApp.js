@@ -27,11 +27,11 @@ app.factory('auth', ['$http', '$window', function ($http, $window) {
         }
     };
     
-    auth.currentUserEmail = function () {
+    auth.currentUserName = function () {
         if (auth.isLoggedIn()) {
             var token = auth.getToken(),
                 payload = JSON.parse($window.atob(token.split('.')[1]));
-            return payload.email;
+            return payload.username;
         }
     };
     
@@ -85,11 +85,11 @@ app.controller('AuthController', ['$scope', 'auth', function ($scope, auth) {
     $scope.user = {};
     
     $scope.register = function () {
-        return auth.register($scope.user);
+        auth.register($scope.user);
     };
     
     $scope.logIn = function () {
-        return auth.logIn($scope.user);
+        auth.logIn($scope.user);
     };
     
     $scope.logOut = function () {
@@ -100,8 +100,8 @@ app.controller('AuthController', ['$scope', 'auth', function ($scope, auth) {
         return auth.isLoggedIn();
     };
     
-    $scope.currentUserEmail = function () {
-        return auth.currentUserEmail();
+    $scope.currentUserName = function () {
+        return auth.currentUserName();
     };
 }]);
 

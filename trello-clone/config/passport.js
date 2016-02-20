@@ -5,14 +5,14 @@ var passport = require('passport'),
     mongoose = require('mongoose'),
     User = mongoose.model('User');
 
-passport.use(new LocalStrategy(function (email, password, done) {
+passport.use(new LocalStrategy(function (username, password, done) {
     "use strict";
-    User.findOne({email : email}, function (err, user) {
+    User.findOne({username : username}, function (err, user) {
         if (err) {
             return done(err);
         }
         if (!user) {
-            return done(null, false, {message : "Unknown email adress."});
+            return done(null, false, {message : "Unknown username."});
         }
         if (!user.validPassword(password)) {
             return done(null, false, {message : "Wrong password."});

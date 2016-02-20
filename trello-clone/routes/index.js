@@ -4,7 +4,9 @@ var express = require('express'),
     router = express.Router(),
     passport = require('passport'),
     mongoose = require('mongoose'),
-    User = mongoose.model('User');
+    User = mongoose.model('User'),
+    jwt = require('express-jwt'),
+    auth = jwt({secret : "TRELLOCLONE", userProperty : 'payload'});
 
 router.get('/', function (req, res, next) {
     "use strict";
@@ -13,11 +15,12 @@ router.get('/', function (req, res, next) {
 
 router.post('/register', function (req, res, next) {
     "use strict";
-    if (!req.body.email || !req.body.password) {
-        return res.status(400).json({ message : 'Please provide an email adress and a password.'});
+    if (!req.body.username || !req.body.password) {
+        return res.status(400).json({ message : 'Please provide a username and a password.'});
     }
+    
     var user = new User();
-    user.email = req.body.email;
+    user.username = req.body.username;
     user.setPassword(req.body.password);
     user.save(function (err) {
         if (err) {
@@ -29,8 +32,8 @@ router.post('/register', function (req, res, next) {
 
 router.post('/login', function (req, res, next) {
     "use strict";
-    if (!req.body.email || !req.body.password) {
-        return res.status(400).json({ message : 'Please provide an email adress and a password.'});
+    if (!req.body.username || !req.body.password) {
+        return res.status(400).json({ message : 'Please provide an username and a password.'});
     }
 
     passport.authenticate('local', function (err, user, info) {
