@@ -8,6 +8,9 @@
                 <div class="panel-heading">
                     <a href="#/rooms/{{$index}}"><h3>{{ room.name }}</h3></a>
                 </div>
+                <div class="panel-body" ng-repeat="user in room.users">
+                    <span>{{ user.username }}</span>
+                </div>
             </div>
         </div>
         

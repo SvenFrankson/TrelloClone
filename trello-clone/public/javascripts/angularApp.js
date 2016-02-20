@@ -69,14 +69,14 @@ app.factory('rooms', ['$http', 'auth', function ($http, auth) {
     };
     
     r.getRooms = function (room, userId) {
-        return $http.get('/rooms/').success(function (data) {
+        $http.get('/rooms/').success(function (data) {
             angular.copy(data, r.rooms);
         });
     };
     
     r.createRoom = function (room, userId) {
         if (auth.isLoggedIn()) {
-            return $http.post('/rooms/add', room, {headers : {Authorization : 'Bearer ' + auth.getToken()}});
+            $http.post('/rooms/addRoom', room, {headers : {Authorization : 'Bearer ' + auth.getToken()}});
         }
     };
     
@@ -95,7 +95,17 @@ app.service('roomService', ['$http', 'auth', function ($http, auth) {
     
     roomService.addBoard = function (room, boardName) {
         if (auth.isLoggedIn()) {
-            return $http.post('/rooms/addBoard', {roomId : room._id, boardName : boardName}, {headers : {Authorization : 'Bearer ' + auth.getToken()}}).success(roomService.getRoom(room, room._id));
+            $http.post('/rooms/addBoard', {roomId : room._id, boardName : boardName}, {headers : {Authorization : 'Bearer ' + auth.getToken()}}).success(function (data) {
+                return roomService.getRoom(room, room._id);
+            });
+        }
+    };
+    
+    roomService.addTag = function (room, tag) {
+        if (auth.isLoggedIn()) {
+            $http.post('/rooms/addTag', {roomId : room._id, tag : tag}, {headers : {Authorization : 'Bearer ' + auth.getToken()}}).success(function (data) {
+                return roomService.getRoom(room, room._id);
+            });
         }
     };
     
@@ -178,9 +188,7 @@ app.controller('RoomController', ['$scope', '$stateParams', '$http', 'rooms', 'r
         if ((!$scope.newTagName) || ($scope.newTagName === "")) {
             return;
         }
-        $scope.room.tags.push({ name: $scope.newTagName, color: $scope.newTagColor });
-        $scope.newTagName = "";
-        $scope.newTagColor = "";
+        roomService.addTag($scope.room, {name : $scope.newTagName, color : $scope.newTagColor});
     };
     
     $scope.addTaskToList = function (tasklist) {
