@@ -4,6 +4,7 @@ var express = require('express'),
     router = express.Router(),
     mongoose = require('mongoose'),
     Room = mongoose.model('Room'),
+    User = mongoose.model('User'),
     Board = mongoose.model('Board'),
     jwt = require('express-jwt'),
     auth = jwt({secret : 'TRELLOCLONE', userProperty : 'payload'});
@@ -21,7 +22,7 @@ router.get('/', function (req, res, next) {
 
 router.post('/getRoom', function (req, res, next) {
     "use strict";
-    Room.findOne({_id : req.body.roomId}).populate('boards').exec(function (err, boards) {
+    Room.findOne({_id : req.body.roomId}).populate(['boards', 'users']).exec(function (err, boards) {
         if (err) {
             return next(err);
         }
@@ -66,6 +67,33 @@ router.post('/addBoard', auth, function (req, res, next) {
         newBoard.rank = room.boards.length;
         newBoard.save(function (err, board) {
             room.boards.push(board._id);
+            room.save(function (err, room) {
+                if (err) {
+                    return next(err);
+                }
+                return res.json(room);
+            });
+        });
+    });
+});
+
+router.post('/addUser', auth, function (req, res, next) {
+    "use strict";
+    Room.findOne({_id : req.body.room._id}, function (err, room) {
+        if (err) {
+            return next(err);
+        }
+        if (!room) {
+            return next();
+        }
+        User.findOne({username : req.body.username}, function (err, user) {
+            if (err) {
+                return next(err);
+            }
+            if (!user) {
+                return next();
+            }
+            room.users.push(user._id);
             room.save(function (err, room) {
                 if (err) {
                     return next(err);

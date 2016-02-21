@@ -3,7 +3,7 @@
     angular
 */
 
-var app = angular.module('trello-clone', ['ui.router', 'ui.bootstrap', 'angularMoment']);
+var app = angular.module('trello-clone', ['ui.router', 'ui.bootstrap', 'angularMoment', 'colorpicker.module']);
 
 app.factory('auth', ['$http', '$window', function ($http, $window) {
     "use strict";
@@ -105,6 +105,15 @@ app.service('roomService', ['$http', 'auth', function ($http, auth) {
     roomService.addTag = function (room, tag) {
         if (auth.isLoggedIn()) {
             $http.post('/rooms/addTag', {roomId : room._id, tag : tag}, {headers : {Authorization : 'Bearer ' + auth.getToken()}}).success(function (data) {
+                return roomService.getRoom(room);
+            });
+        }
+    };
+    
+    roomService.addUser = function (room, username) {
+        alert("CTRL")
+        if (auth.isLoggedIn()) {
+            $http.post('/rooms/addUser', {room : room, username : username}, {headers : {Authorization : 'Bearer ' + auth.getToken()}}).success(function (data) {
                 return roomService.getRoom(room);
             });
         }
@@ -267,6 +276,12 @@ app.controller('RoomController', ['$scope', '$stateParams', '$http', 'rooms', 'r
         roomService.addTag($scope.room, {name : $scope.newTagName, color : $scope.newTagColor});
         $scope.newTagName = "";
         $scope.newTagColor = "";
+    };
+    
+    $scope.addUser = function () {
+        alert("CTRL")
+        roomService.addUser($scope.room, $scope.newUser);
+        $scope.newUser = "";
     };
     
     $scope.addTask = function (board) {
