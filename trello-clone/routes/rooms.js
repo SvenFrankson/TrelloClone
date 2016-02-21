@@ -27,8 +27,6 @@ router.post('/getRoom', auth, function (req, res, next) {
             return next(err);
         }
         if (roomUnpop.users.indexOf(req.payload._id) === -1) {
-            console.log("ID : " + req.payload._id);
-            console.log("username : " + req.payload.username);
             return next();
         }
         Room.populate(roomUnpop, ['boards', 'users'], function (err, roomPop1) {

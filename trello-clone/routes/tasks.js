@@ -39,6 +39,34 @@ router.post('/removeTag', auth, function (req, res, next) {
     });
 });
 
+router.post('/switch', auth, function (req, res, next) {
+    "use strict";
+    Task.findOne({_id : req.body.task1._id}, function (err, task1) {
+        if (err) {
+            return next(err);
+        }
+        Task.findOne({_id : req.body.task2._id}, function (err, task2) {
+            if (err) {
+                return next(err);
+            }
+            var rank = task1.rank;
+            task1.rank = task2.rank;
+            task2.rank = rank;
+            task1.save(function (err, task) {
+                if (err) {
+                    return next(err);
+                }
+                task2.save(function (err, task) {
+                    if (err) {
+                        return next(err);
+                    }
+                    return res.json(task);
+                });
+            });
+        });
+    });
+});
+
 router.post('/save', auth, function (req, res, next) {
     "use strict";
     Task.findOne({_id : req.body.task._id}, function (err, task) {

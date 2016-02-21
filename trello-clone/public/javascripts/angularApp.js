@@ -133,6 +133,14 @@ app.service('boardService', ['$http', 'auth', 'roomService', function ($http, au
         }
     };
     
+    boardService.switchPosition = function (room, board1, board2) {
+        if (auth.isLoggedIn()) {
+            $http.post('/boards/switch', {board1 : board1, board2 : board2}, {headers : {Authorization : 'Bearer ' + auth.getToken()}}).success(function (data) {
+                return roomService.getRoom(room);
+            });
+        }
+    };
+    
     boardService.saveBoard = function (room, board) {
         if (auth.isLoggedIn()) {
             $http.post('/boards/save', {board : board}, {headers : {Authorization : 'Bearer ' + auth.getToken()}}).success(function (data) {
@@ -167,6 +175,14 @@ app.service('taskService', ['$http', 'auth', 'roomService', function ($http, aut
     taskService.removeTag = function (room, task, tagIndex) {
         if (auth.isLoggedIn()) {
             $http.post('/tasks/removeTag', {task : task, tagIndex : tagIndex}, {headers : {Authorization : 'Bearer ' + auth.getToken()}}).success(function (data) {
+                return roomService.getRoom(room);
+            });
+        }
+    };
+    
+    taskService.switchPosition = function (room, task1, task2) {
+        if (auth.isLoggedIn()) {
+            $http.post('/tasks/switch', {task1 : task1, task2 : task2}, {headers : {Authorization : 'Bearer ' + auth.getToken()}}).success(function (data) {
                 return roomService.getRoom(room);
             });
         }
@@ -298,12 +314,72 @@ app.controller('RoomController', ['$scope', '$stateParams', '$http', 'rooms', 'r
         taskService.removeTask($scope.room, task);
     };
     
+    $scope.taskUp = function (board, task) {
+        var task2 = {};
+        task2.rank = -1;
+        board.tasks.forEach(function (t) {
+            if (t.rank < task.rank) {
+                if (t.rank > task2.rank) {
+                    task2 = t;
+                }
+            }
+        });
+        if (task2.rank !== -1) {
+            taskService.switchPosition($scope.room, task, task2);
+        }
+    };
+    
+    $scope.taskDown = function (board, task) {
+        var task2 = {};
+        task2.rank = 99999;
+        board.tasks.forEach(function (t) {
+            if (t.rank > task.rank) {
+                if (t.rank < task2.rank) {
+                    task2 = t;
+                }
+            }
+        });
+        if (task2.rank !== 99999) {
+            taskService.switchPosition($scope.room, task, task2);
+        }
+    };
+    
     $scope.saveBoard = function (board) {
         boardService.saveBoard($scope.room, board);
     };
     
     $scope.deleteBoard = function (board) {
         boardService.deleteBoard($scope.room, board);
+    };
+    
+    $scope.boardLeft = function (board) {
+        var board2 = {};
+        board2.rank = -1;
+        $scope.room.boards.forEach(function (t) {
+            if (t.rank < board.rank) {
+                if (t.rank > board2.rank) {
+                    board2 = t;
+                }
+            }
+        });
+        if (board2.rank !== -1) {
+            boardService.switchPosition($scope.room, board, board2);
+        }
+    };
+    
+    $scope.boardRight = function (board) {
+        var board2 = {};
+        board2.rank = 99999;
+        $scope.room.boards.forEach(function (t) {
+            if (t.rank > board.rank) {
+                if (t.rank < board2.rank) {
+                    board2 = t;
+                }
+            }
+        });
+        if (board2.rank !== 99999) {
+            boardService.switchPosition($scope.room, board, board2);
+        }
     };
     
     $scope.addTagToTask = function (task, tag) {

@@ -12,6 +12,7 @@ router.post('/addTask', auth, function (req, res, next) {
     "use strict";
     Board.findOne({_id : req.body.boardId}, function (err, board) {
         var newTask = new Task(req.body.task);
+        newTask.rank = board.tasks.length;
         newTask.save(function (err, task) {
             board.tasks.push(task._id);
             board.save(function (err, board) {
@@ -19,6 +20,34 @@ router.post('/addTask', auth, function (req, res, next) {
                     return next(err);
                 }
                 return res.json(board);
+            });
+        });
+    });
+});
+
+router.post('/switch', auth, function (req, res, next) {
+    "use strict";
+    Board.findOne({_id : req.body.board1._id}, function (err, board1) {
+        if (err) {
+            return next(err);
+        }
+        Board.findOne({_id : req.body.board2._id}, function (err, board2) {
+            if (err) {
+                return next(err);
+            }
+            var rank = board1.rank;
+            board1.rank = board2.rank;
+            board2.rank = rank;
+            board1.save(function (err, board) {
+                if (err) {
+                    return next(err);
+                }
+                board2.save(function (err, board) {
+                    if (err) {
+                        return next(err);
+                    }
+                    return res.json(board);
+                });
             });
         });
     });
