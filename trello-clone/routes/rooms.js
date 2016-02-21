@@ -20,14 +20,27 @@ router.get('/', function (req, res, next) {
     });
 });
 
-router.post('/getRoom', function (req, res, next) {
+router.post('/getRoom', auth, function (req, res, next) {
     "use strict";
-    Room.findOne({_id : req.body.roomId}).populate(['boards', 'users']).exec(function (err, boards) {
+    Room.findOne({_id : req.body.roomId}).exec(function (err, roomUnpop) {
         if (err) {
             return next(err);
         }
-        Room.populate(boards, {path : 'boards.tasks', model : 'Task'}, function (err, room) {
-            return res.json(room);
+        if (roomUnpop.users.indexOf(req.payload._id) === -1) {
+            console.log("ID : " + req.payload._id);
+            console.log("username : " + req.payload.username);
+            return next();
+        }
+        Room.populate(roomUnpop, ['boards', 'users'], function (err, roomPop1) {
+            if (err) {
+                return next(err);
+            }
+            Room.populate(roomPop1, {path : 'boards.tasks', model : 'Task'}, function (err, room) {
+                if (err) {
+                    return next(err);
+                }
+                return res.json(room);
+            });
         });
     });
 });

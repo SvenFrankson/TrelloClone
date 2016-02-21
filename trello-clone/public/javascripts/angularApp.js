@@ -111,7 +111,6 @@ app.service('roomService', ['$http', 'auth', function ($http, auth) {
     };
     
     roomService.addUser = function (room, username) {
-        alert("CTRL")
         if (auth.isLoggedIn()) {
             $http.post('/rooms/addUser', {room : room, username : username}, {headers : {Authorization : 'Bearer ' + auth.getToken()}}).success(function (data) {
                 return roomService.getRoom(room);
@@ -279,7 +278,6 @@ app.controller('RoomController', ['$scope', '$stateParams', '$http', 'rooms', 'r
     };
     
     $scope.addUser = function () {
-        alert("CTRL")
         roomService.addUser($scope.room, $scope.newUser);
         $scope.newUser = "";
     };
