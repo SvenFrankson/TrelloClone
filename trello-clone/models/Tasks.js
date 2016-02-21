@@ -4,7 +4,8 @@ var mongoose = require('mongoose');
 
 var TaskSchema = new mongoose.Schema({
     rank : Number,
-    content : String
+    content : String,
+    tags : [Number]
 });
 
 mongoose.model('Task', TaskSchema);

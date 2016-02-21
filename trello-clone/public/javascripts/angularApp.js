@@ -1,3 +1,4 @@
+/*jslint nomen: true */
 /*global
     angular
 */
@@ -124,7 +125,54 @@ app.service('boardService', ['$http', 'auth', 'roomService', function ($http, au
         }
     };
     
+    boardService.saveBoard = function (room, board) {
+        if (auth.isLoggedIn()) {
+            $http.post('/boards/save', {board : board}, {headers : {Authorization : 'Bearer ' + auth.getToken()}}).success(function (data) {
+                return roomService.getRoom(room);
+            });
+        }
+    };
+    
+    boardService.deleteBoard = function (room, board) {
+        if (auth.isLoggedIn()) {
+            $http.post('/boards/remove', {board : board}, {headers : {Authorization : 'Bearer ' + auth.getToken()}}).success(function (data) {
+                return roomService.getRoom(room);
+            });
+        }
+    };
+    
     return boardService;
+}]);
+
+app.service('taskService', ['$http', 'auth', 'roomService', function ($http, auth, roomService) {
+    "use strict";
+    var taskService = {};
+    
+    taskService.addTag = function (room, task, tagIndex) {
+        if (auth.isLoggedIn()) {
+            $http.post('/tasks/addTag', {task : task, tagIndex : tagIndex}, {headers : {Authorization : 'Bearer ' + auth.getToken()}}).success(function (data) {
+                return roomService.getRoom(room);
+            });
+        }
+    };
+    
+    taskService.saveTask = function (room, task) {
+        if (auth.isLoggedIn()) {
+            $http.post('/tasks/save', {task : task}, {headers : {Authorization : 'Bearer ' + auth.getToken()}}).success(function (data) {
+                return roomService.getRoom(room);
+            });
+        }
+    };
+    
+    taskService.deleteTask = function (room, task) {
+        if (auth.isLoggedIn()) {
+            $http.post('/tasks/remove', {task : task}, {headers : {Authorization : 'Bearer ' + auth.getToken()}}).success(function (data) {
+                return roomService.getRoom(room);
+            });
+        }
+    };
+    
+    return taskService;
 }]);
 
 app.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $urlRouterProvider) {
@@ -187,7 +235,7 @@ app.controller('HomeController', ['$scope', 'auth', 'rooms', function ($scope, a
     };
 }]);
 
-app.controller('RoomController', ['$scope', '$stateParams', '$http', 'rooms', 'roomService', 'boardService', 'auth', function ($scope, $stateParams, $http, rooms, roomService, boardService, auth) {
+app.controller('RoomController', ['$scope', '$stateParams', '$http', 'rooms', 'roomService', 'boardService', 'taskService', 'auth', function ($scope, $stateParams, $http, rooms, roomService, boardService, taskService, auth) {
     "use strict";
     $scope.room = rooms.rooms[$stateParams.id];
     roomService.getRoom($scope.room);
@@ -217,9 +265,15 @@ app.controller('RoomController', ['$scope', '$stateParams', '$http', 'rooms', 'r
         board.newTaskContent = "";
     };
     
+    $scope.saveBoard = function (board) {
+        boardService.saveBoard($scope.room, board);
+    };
+    
+    $scope.deleteBoard = function (board) {
+        boardService.deleteBoard($scope.room, board);
+    };
+    
     $scope.addTagToTask = function (task, tag) {
-        if (task.tags.indexOf(tag) === -1) {
-            task.tags.push(tag);
-        }
+        taskService.addTag($scope.room, task, tag);
     };
 }]);

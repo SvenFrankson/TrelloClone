@@ -1,4 +1,4 @@
-/*jslint node:true*/
+/*jslint node: true, nomen: true */
 
 var express = require('express'),
     router = express.Router(),
@@ -23,11 +23,9 @@ router.post('/getRoom', function (req, res, next) {
     "use strict";
     Room.findOne({_id : req.body.roomId}).populate('boards').exec(function (err, boards) {
         if (err) {
-            console.log(err);
             return next(err);
         }
         Room.populate(boards, {path : 'boards.tasks', model : 'Task'}, function (err, room) {
-            console.log(room);
             return res.json(room);
         });
     });

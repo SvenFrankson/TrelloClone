@@ -1,4 +1,4 @@
-/*jslint node:true*/
+/*jslint node: true, nomen: true */
 
 var express = require('express'),
     router = express.Router(),
@@ -20,6 +20,33 @@ router.post('/addTask', auth, function (req, res, next) {
                 }
                 return res.json(board);
             });
+        });
+    });
+});
+
+router.post('/save', auth, function (req, res, next) {
+    "use strict";
+    Board.findOne({_id : req.body.board._id}, function (err, board) {
+        board.name = req.body.board.name;
+        board.rank = req.body.board.rank;
+        board.tasks = req.body.board.tasks.slice(0);
+        board.save(function (err, board) {
+            if (err) {
+                return next(err);
+            }
+            return res.json(board);
+        });
+    });
+});
+
+router.post('/remove', auth, function (req, res, next) {
+    "use strict";
+    Board.findOne({_id : req.body.board._id}, function (err, board) {
+        board.remove(function (err) {
+            if (err) {
+                return next(err);
+            }
+            return res.json(board);
         });
     });
 });

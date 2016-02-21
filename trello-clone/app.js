@@ -35,11 +35,13 @@ var routes = require('./routes/index');
 var users = require('./routes/users');
 var rooms = require('./routes/rooms');
 var boards = require('./routes/boards');
+var tasks = require('./routes/tasks');
 
 app.use('/', routes);
 app.use('/users/', users);
 app.use('/rooms/', rooms);
 app.use('/boards/', boards);
+app.use('/tasks/', tasks);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
