@@ -3,7 +3,7 @@
     angular
 */
 
-var app = angular.module('trello-clone', ['ui.router', 'ui.bootstrap']);
+var app = angular.module('trello-clone', ['ui.router', 'ui.bootstrap', 'angularMoment']);
 
 app.factory('auth', ['$http', '$window', function ($http, $window) {
     "use strict";
@@ -156,6 +156,14 @@ app.service('taskService', ['$http', 'auth', 'roomService', function ($http, aut
         }
     };
     
+    taskService.removeTag = function (room, task, tagIndex) {
+        if (auth.isLoggedIn()) {
+            $http.post('/tasks/removeTag', {task : task, tagIndex : tagIndex}, {headers : {Authorization : 'Bearer ' + auth.getToken()}}).success(function (data) {
+                return roomService.getRoom(room);
+            });
+        }
+    };
+    
     taskService.saveTask = function (room, task) {
         if (auth.isLoggedIn()) {
             $http.post('/tasks/save', {task : task}, {headers : {Authorization : 'Bearer ' + auth.getToken()}}).success(function (data) {
@@ -164,7 +172,7 @@ app.service('taskService', ['$http', 'auth', 'roomService', function ($http, aut
         }
     };
     
-    taskService.deleteTask = function (room, task) {
+    taskService.removeTask = function (room, task) {
         if (auth.isLoggedIn()) {
             $http.post('/tasks/remove', {task : task}, {headers : {Authorization : 'Bearer ' + auth.getToken()}}).success(function (data) {
                 return roomService.getRoom(room);
@@ -191,7 +199,12 @@ app.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $u
         .state('rooms', {
             url: '/rooms/{id}',
             templateUrl: 'views/partial-rooms.html',
-            controller: 'RoomController'
+            controller: 'RoomController',
+            resolve : {
+                populateDeep : ['$stateParams', 'rooms', 'roomService', function ($stateParams, rooms, roomService) {
+                    roomService.getRoom(rooms.rooms[$stateParams.id]);
+                }]
+            }
         });
     
     $urlRouterProvider.otherwise('home');
@@ -238,7 +251,6 @@ app.controller('HomeController', ['$scope', 'auth', 'rooms', function ($scope, a
 app.controller('RoomController', ['$scope', '$stateParams', '$http', 'rooms', 'roomService', 'boardService', 'taskService', 'auth', function ($scope, $stateParams, $http, rooms, roomService, boardService, taskService, auth) {
     "use strict";
     $scope.room = rooms.rooms[$stateParams.id];
-    roomService.getRoom($scope.room);
     
     $scope.addBoard = function () {
         if ((!$scope.newBoardName) || ($scope.newBoardName === "")) {
@@ -261,8 +273,16 @@ app.controller('RoomController', ['$scope', '$stateParams', '$http', 'rooms', 'r
         if ((!board.newTaskContent) || (board.newTaskContent === "")) {
             return;
         }
-        boardService.addTask($scope.room, board, { content : board.newTaskContent});
+        boardService.addTask($scope.room, board, { content : board.newTaskContent, dueDate : new Date()});
         board.newTaskContent = "";
+    };
+    
+    $scope.saveTask = function (task) {
+        taskService.saveTask($scope.room, task);
+    };
+    
+    $scope.removeTask = function (task) {
+        taskService.removeTask($scope.room, task);
     };
     
     $scope.saveBoard = function (board) {
@@ -275,5 +295,9 @@ app.controller('RoomController', ['$scope', '$stateParams', '$http', 'rooms', 'r
     
     $scope.addTagToTask = function (task, tag) {
         taskService.addTag($scope.room, task, tag);
+    };
+    
+    $scope.removeTagFromTask = function (task, tagIndex) {
+        taskService.removeTag($scope.room, task, tagIndex);
     };
 }]);
