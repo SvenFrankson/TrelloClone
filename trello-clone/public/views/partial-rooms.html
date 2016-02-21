@@ -65,7 +65,7 @@
                                             <span ng-show="taskEditing" class="label label-default" ng-click="removeTagFromTask(task, tag)">x</span>
                                         </span>
 
-                                        <span uib-dropdown ng-show="taskEditing">
+                                        <span uib-dropdown>
                                             <span class="label label-default" id="simple-dropdown" uib-dropdown-toggle>+</span>
                                             <ul uib-dropdown-menu>
                                                 <li ng-repeat="tag in room.tags">
@@ -123,8 +123,10 @@
             <div class="panel-heading">
                 <h2 class="panel-title">Users ({{ room.users.length }}) </h2>
             </div>
-            <div class="panel-body" ng-repeat="user in room.users">
-                {{user.username}}
+            <div class="panel-body">
+                <div ng-repeat="user in room.users">
+                    {{user.username}}
+                </div>
             </div>
             <div class="panel-footer">
                 <form class="form-inline">
