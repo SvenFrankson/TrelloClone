@@ -275,7 +275,29 @@ app.controller('HomeController', ['$scope', 'auth', 'rooms', function ($scope, a
 app.controller('RoomController', ['$scope', '$stateParams', '$http', 'rooms', 'roomService', 'boardService', 'taskService', 'auth', function ($scope, $stateParams, $http, rooms, roomService, boardService, taskService, auth) {
     "use strict";
     $scope.room = rooms.rooms[$stateParams.id];
+    $scope.testDate = new Date();
     
+            
+    $scope.getColorDate = function (t) {
+        var now = new Date(),
+            then = new Date(t);
+        
+        if (then.getFullYear() === now.getFullYear()) {
+            if (then.getMonth() === now.getMonth()) {
+                if (then.getDate() === now.getDate()) {
+                    return "blue";
+                }
+            }
+        }
+        if (then < now) {
+            return "red";
+        } else if (then > now) {
+            return "green";
+        } else {
+            return "black";
+        }
+    };
+            
     $scope.addBoard = function () {
         if ((!$scope.newBoardName) || ($scope.newBoardName === "")) {
             return;

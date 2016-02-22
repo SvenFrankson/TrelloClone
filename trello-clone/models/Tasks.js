@@ -6,7 +6,7 @@ var TaskSchema = new mongoose.Schema({
     rank : Number,
     content : String,
     tags : [Number],
-    dueDate : [Date]
+    dueDate : Date
 });
 
 mongoose.model('Task', TaskSchema);

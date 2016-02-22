@@ -13,6 +13,7 @@ router.post('/addTask', auth, function (req, res, next) {
     Board.findOne({_id : req.body.boardId}, function (err, board) {
         var newTask = new Task(req.body.task);
         newTask.rank = board.tasks.length;
+        newTask.dueDate = new Date();
         newTask.save(function (err, task) {
             board.tasks.push(task._id);
             board.save(function (err, board) {
