@@ -156,5 +156,23 @@
                 </form>
             </div>
         </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="panel-title">Comments</h2>
+            </div>
+            <div class="panel-body">
+                <div ng-repeat="comment in room.comments">
+                    {{comment.author}} - <time am-time-ago="comment.date"></time> : {{comment.content}}
+                </div>
+            </div>
+            <div class="panel-footer">
+                <form class="form-inline">
+                    <div class="form-group">
+                        <input class="form-control" type="text" placeholder="Comment" ng-model="newComment"/>
+                        <button class="btn btn-default" ng-click="addComment()"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 </div>

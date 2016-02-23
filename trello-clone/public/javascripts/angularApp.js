@@ -118,6 +118,14 @@ app.service('roomService', ['$http', 'auth', function ($http, auth) {
         }
     };
     
+    roomService.addComment = function (room, comment) {
+        if (auth.isLoggedIn()) {
+            $http.post('/rooms/addComment', {room : room, content : comment}, {headers : {Authorization : 'Bearer ' + auth.getToken()}}).success(function (data) {
+                return roomService.getRoom(room);
+            });
+        }
+    };
+    
     return roomService;
 }]);
 
@@ -327,6 +335,10 @@ app.controller('RoomController', ['$scope', '$stateParams', '$http', 'rooms', 'r
     $scope.addUser = function () {
         roomService.addUser($scope.room, $scope.newUser);
         $scope.newUser = "";
+    };
+    
+    $scope.addComment = function () {
+        roomService.addComment($scope.room, $scope.newComment);
     };
     
     $scope.addTask = function (board) {

@@ -118,4 +118,26 @@ router.post('/addUser', auth, function (req, res, next) {
     });
 });
 
+router.post('/addComment', auth, function (req, res, next) {
+    Room.findOne({_id : req.body.room._id}, function (err, room) {
+        if (err) {
+            return next(err);
+        }
+        if (!room) {
+            return next();
+        }
+        var comment = {};
+        comment.author = req.payload.username;
+        comment.date = new Date();
+        comment.content = req.body.content;
+        room.comments.push(comment);
+        room.save(function (err, room) {
+            if (err) {
+                return next(err);
+            }
+            return res.json(room);
+        });
+    });
+});
+
 module.exports = router;

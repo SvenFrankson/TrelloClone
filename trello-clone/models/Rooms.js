@@ -12,7 +12,12 @@ var RoomSchema = new mongoose.Schema({
         }
     ],
     users : [{ type : mongoose.Schema.Types.ObjectId, ref : 'User'}],
-    lastRank : Number
+    lastRank : Number,
+    comments : [{
+        author : String,
+        date : Date,
+        content : String
+    }]
 });
 
 mongoose.model('Room', RoomSchema);
