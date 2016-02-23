@@ -100,9 +100,15 @@
                             <div class="panel-body" ng-show="taskEditing">
                                 <div>
                                     <input class="form-control" type="text" ng-model="task.content" ng-required/>
+                                    <p class="input-group">
+                                        <input type="text" class="form-control" uib-datepicker-popup ng-model="task.newDateValue" is-open="task.newDate.opened" min-date="minDate" max-date="maxDate" datepicker-options="dateOptions" ng-required="true" close-text="Close" />
+                                        <span class="input-group-btn">
+                                            <button type="button" class="btn btn-default" ng-click="task.newDate.opened = true"><i class="glyphicon glyphicon-calendar"></i></button>
+                                        </span>
+                                    </p>
                                     <br/>
                                     <button class="btn btn-default" ng-click="removeTask(task); taskEditing = false">Remove</button>
-                                    <button class="btn btn-default" ng-click="saveTask(task); taskEditing = false">Save</button>
+                                    <button class="btn btn-default" ng-click="saveTask(task, task.newDateValue); taskEditing = false">Save</button>
                                 </div>
                             </div>
                         </div>

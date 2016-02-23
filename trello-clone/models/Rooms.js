@@ -11,7 +11,8 @@ var RoomSchema = new mongoose.Schema({
             color : String
         }
     ],
-    users : [{ type : mongoose.Schema.Types.ObjectId, ref : 'User'}]
+    users : [{ type : mongoose.Schema.Types.ObjectId, ref : 'User'}],
+    lastRank : Number
 });
 
 mongoose.model('Room', RoomSchema);

@@ -5,6 +5,7 @@ var mongoose = require('mongoose');
 var BoardSchema = new mongoose.Schema({
     name : String,
     rank : Number,
+    lastRank : Number,
     tasks : [{ type : mongoose.Schema.Types.ObjectId, ref : 'Task'}]
 });
 

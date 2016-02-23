@@ -47,6 +47,7 @@ router.post('/addRoom', auth, function (req, res, next) {
     "use strict";
     var room = new Room(req.body);
     room.users.push(req.payload._id);
+    room.lastRank = 0;
 
     room.save(function (err, room) {
         if (err) {
@@ -75,9 +76,11 @@ router.post('/addBoard', auth, function (req, res, next) {
     Room.findOne({_id : req.body.roomId}, function (err, room) {
         var newBoard = new Board();
         newBoard.name = req.body.boardName;
-        newBoard.rank = room.boards.length;
+        newBoard.rank = room.lastRank;
+        newBoard.lastRank = 0;
         newBoard.save(function (err, board) {
             room.boards.push(board._id);
+            room.lastRank += 1;
             room.save(function (err, room) {
                 if (err) {
                     return next(err);

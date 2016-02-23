@@ -226,7 +226,7 @@ app.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $u
             controller: 'RoomController',
             resolve : {
                 populateDeep : ['$stateParams', 'rooms', 'roomService', function ($stateParams, rooms, roomService) {
-                    roomService.getRoom(rooms.rooms[$stateParams.id]);
+                    return roomService.getRoom(rooms.rooms[$stateParams.id]);
                 }]
             }
         });
@@ -274,9 +274,18 @@ app.controller('HomeController', ['$scope', 'auth', 'rooms', function ($scope, a
 
 app.controller('RoomController', ['$scope', '$stateParams', '$http', 'rooms', 'roomService', 'boardService', 'taskService', 'auth', function ($scope, $stateParams, $http, rooms, roomService, boardService, taskService, auth) {
     "use strict";
+    roomService.getRoom(rooms.rooms[$stateParams.id]);
     $scope.room = rooms.rooms[$stateParams.id];
-    $scope.testDate = new Date();
     
+    $scope.minDate = new Date(2000, 1, 1);
+    $scope.maxDate = new Date(2020, 1, 1);
+    
+    $scope.newDate = new Date();
+    
+    $scope.dateOptions = {
+        formatYear: 'yy',
+        startingDay: 1
+    };
             
     $scope.getColorDate = function (t) {
         var now = new Date(),
@@ -328,7 +337,15 @@ app.controller('RoomController', ['$scope', '$stateParams', '$http', 'rooms', 'r
         board.newTaskContent = "";
     };
     
-    $scope.saveTask = function (task) {
+    $scope.saveTaskDate = function (task) {
+        task.dueDate = new Date($scope.newDate);
+        taskService.saveTask($scope.room, task);
+    };
+    
+    $scope.saveTask = function (task, date) {
+        if (date) {
+            task.dueDate = date;
+        }
         taskService.saveTask($scope.room, task);
     };
     
