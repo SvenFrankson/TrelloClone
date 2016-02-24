@@ -100,12 +100,13 @@
                             <div class="panel-body" ng-show="taskEditing">
                                 <div>
                                     <input class="form-control" type="text" ng-model="task.content" ng-required/>
-                                    <p class="input-group">
+                                    <div class="input-group">
+                                        <span class="glyphicon glyphicon-time" ng-style="{'color': getColorDate(task.dueDate)}"></span>
                                         <input type="text" class="form-control" uib-datepicker-popup ng-model="task.newDateValue" is-open="task.newDate.opened" min-date="minDate" max-date="maxDate" datepicker-options="dateOptions" ng-required="true" close-text="Close" />
                                         <span class="input-group-btn">
                                             <button type="button" class="btn btn-default" ng-click="task.newDate.opened = true"><i class="glyphicon glyphicon-calendar"></i></button>
                                         </span>
-                                    </p>
+                                    </div>
                                     <br/>
                                     <button class="btn btn-default" ng-click="removeTask(task); taskEditing = false">Remove</button>
                                     <button class="btn btn-default" ng-click="saveTask(task, task.newDateValue); taskEditing = false">Save</button>
@@ -114,10 +115,17 @@
                         </div>
                     </div>
                     <div class="panel-footer">
-                        <form class="form-inline" ng-submit="addTask(board)">
+                        <form class="form-inline" >
                             <div class="form-group">
                                 <input class="form-control" type="text" placeholder="New Task" ng-model="board.newTaskContent"/>
-                                <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
+                                <div class="input-group">
+                                        <span class="glyphicon glyphicon-time" ng-style="{'color': getColorDate(task.dueDate)}"></span>
+                                        <input type="text" class="form-control" uib-datepicker-popup ng-model="board.newDateValue" is-open="board.newDate.opened" min-date="minDate" max-date="maxDate" datepicker-options="dateOptions" ng-required="true" close-text="Close" />
+                                        <span class="input-group-btn">
+                                            <button type="button" class="btn btn-default" ng-click="board.newDate.opened = true"><i class="glyphicon glyphicon-calendar"></i></button>
+                                        </span>
+                                    </div>
+                                <button class="btn btn-default" ng-click="addTask(board, board.newDateValue)"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
                             </div>
                         </form>
                     </div>

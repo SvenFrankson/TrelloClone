@@ -341,11 +341,11 @@ app.controller('RoomController', ['$scope', '$stateParams', '$http', 'rooms', 'r
         roomService.addComment($scope.room, $scope.newComment);
     };
     
-    $scope.addTask = function (board) {
+    $scope.addTask = function (board, date) {
         if ((!board.newTaskContent) || (board.newTaskContent === "")) {
             return;
         }
-        boardService.addTask($scope.room, board, { content : board.newTaskContent, dueDate : new Date()});
+        boardService.addTask($scope.room, board, { content : board.newTaskContent, dueDate : date});
         board.newTaskContent = "";
     };
     
