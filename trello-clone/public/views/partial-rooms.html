@@ -93,7 +93,7 @@
                                 </div>
                             </div>
                             <div class="panel-body" ng-hide="taskEditing">
-                                <span class="glyphicon glyphicon-time" ng-style="{'color': getColorDate(task.dueDate)}"></span>
+                                <span class="glyphicon glyphicon-time" ng-style="{'color': getColorDate(task.dueDate)}" title="task.dueDate"></span>
                                 {{ task.dueDate | amCalendar }}
                             </div>
 
